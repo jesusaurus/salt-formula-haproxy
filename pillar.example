@@ -1,0 +1,60 @@
+haproxy:
+  global:
+    maxconn: 1024
+
+  defaults:
+    mode: http
+    timeout:
+      connect: 5000ms
+      client: 50000ms
+      server: 50000ms
+
+  listens:
+    admin:
+      mode: http
+      bind: '0.0.0.0:22002'
+      stats:
+        - uri /
+
+    designate-api:
+      bind: 0.0.0.0:9001
+      servers:
+        haproxy1:
+          addr: 'api1:9001'
+          params: check port 9001 inter 2000 rise 5 fall 3
+        haproxy2:
+          addr: 'api2:9001'
+          params: check port 9001 inter 2000 rise 5 fall 3
+        haproxy3:
+          addr: 'api3:9001'
+          params: check port 9001 inter 2000 rise 5 fall 3
+
+    percona-master:
+      bind: 0.0.0.0:3306
+      options:
+        - httpchk
+      servers:
+        percona1:
+          addr: 'percona1:3306'
+          params: check port 9200 inter 2000 rise 5 fall 3
+        percona2:
+          addr: 'percona2:3306'
+          params: check port 9200 inter 2000 rise 5 fall 3 backup
+        percona3:
+          addr: 'percona3:3306'
+          params: check port 9200 inter 2000 rise 5 fall 3 backup
+
+    percona-any:
+      bind: 0.0.0.0:3307
+      options:
+        - httpchk
+      servers:
+        percona1:
+          addr: 'percona1:3306'
+          params: check port 9200 inter 2000 rise 5 fall 3
+        percona2:
+          addr: 'percona2:3306'
+          params: check port 9200 inter 2000 rise 5 fall 3
+        percona3:
+          addr: 'percona3:3306'
+          params: check port 9200 inter 2000 rise 5 fall 3
