@@ -8,6 +8,8 @@ haproxy:
       connect: 5000ms
       client: 50000ms
       server: 50000ms
+    options:
+      - forwardfor
 
   listens:
     admin:
